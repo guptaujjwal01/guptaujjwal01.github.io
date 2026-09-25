@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pricing — Clarv</title>
+<meta name="description" content="Clarv is priced per seller account for your volume. Tell us about your business and we will send you a quote." />
+<link rel="icon" href="logo.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="/"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="9.5" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="14" cy="14" r="3.2" fill="currentColor"/><path d="M21 7l4-4" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>Clarv</a>
+  <nav class="nav"><a class="hide-m" href="index.html#features">Features</a><a class="on" href="pricing.html">Pricing</a><a class="hide-m" href="privacy.html">Privacy</a><a href="contact.html">Contact</a><a class="btn primary" href="pricing.html#quote">Get a quote</a></nav>
+</div></header>
+<main><section><div class="wrap grid2" style="margin-top:0;align-items:start">
+  <div>
+    <div class="eyebrow">Pricing</div>
+    <h1 style="margin-top:10px">Priced per seller account, for your volume.</h1>
+    <p class="lead" style="margin-top:14px">Every account gets every check: settlements, bank and fees reconciled; the FBA ledger and claims; GSTR-1, the 2B match, TDS and TCS; stock planning, price floor and account health. The price depends on your monthly orders, the marketplaces you sell on and how many people work in Clarv, so we quote it for your business rather than print a table.</p>
+    <ul class="rule-list">
+      <li>Billed monthly per seller account, in rupees, GST extra. Cancel any month.</li>
+      <li>Reading your own Amazon data is never charged: Amazon's Selling Partner API is free to sellers.</li>
+      <li>Accounting practices serving many sellers get a practice console and a per-seller rate.</li>
+      <li>Your data is yours: export everything as files at any time; deleted within 30 days of a request.</li>
+    </ul>
+  </div>
+  <div class="card" id="quote">
+    <h3>Tell us about your business</h3>
+    <p class="small muted" style="margin:6px 0 18px">We reply with a quote and a walkthrough, usually the same working day.</p>
+    <form class="form" id="quoteForm" method="POST" action="" data-netlify="true" name="quote">
+      <label>Your name<input name="name" required autocomplete="name" /></label>
+      <label>Business / seller name<input name="business" required autocomplete="organization" /></label>
+      <label>E-mail<input name="email" type="email" required autocomplete="email" /></label>
+      <label>Phone (WhatsApp is fine)<input name="phone" type="tel" autocomplete="tel" /></label>
+      <label>Marketplaces you sell on<input name="marketplaces" placeholder="Amazon.in, Amazon US, Flipkart…" /></label>
+      <label>Orders a month, roughly<select name="orders"><option>Under 1,000</option><option>1,000 – 5,000</option><option>5,000 – 20,000</option><option>20,000 – 50,000</option><option>Over 50,000</option></select></label>
+      <label>Who will work in Clarv?<select name="who"><option>Just me</option><option>My team</option><option>My accountant and me</option><option>I am an accounting practice serving sellers</option></select></label>
+      <label>Anything else<textarea name="notes" rows="3" placeholder="What takes the most time today?"></textarea></label>
+      <button class="btn primary" type="submit">Send and get a quote</button>
+      <p class="small muted" id="quoteNote">Or write to <a href="mailto:hello@clarv.in">hello@clarv.in</a> with the same details.</p>
+    </form>
+  </div>
+</div></section></main>
+<footer><div class="wrap"><span>© 2026 Clarv · a product of Ujjwal Gupta &amp; Associates, Chartered Accountants</span><a href="pricing.html">Pricing</a><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms</a><a href="contact.html">Contact</a></div></footer>
+<script>
+// Where the site is hosted on Netlify the form posts to Netlify Forms (data-netlify). Anywhere else, or if that post is
+// refused, the details go by e-mail: the visitor's mail client opens with everything filled in, and nothing is lost.
+(function () {
+  var f = document.getElementById("quoteForm"), note = document.getElementById("quoteNote");
+  var endpoint = f.getAttribute("data-endpoint");
+  f.addEventListener("submit", function (e) {
+    var d = new FormData(f), lines = [];
+    d.forEach(function (v, k) { if (String(v).trim()) lines.push(k + ": " + v); });
+    var mail = "mailto:hello@clarv.in?subject=" + encodeURIComponent("Quote request: " + (d.get("business") || d.get("name"))) + "&body=" + encodeURIComponent(lines.join("\n"));
+    if (endpoint) {
+      e.preventDefault();
+      fetch(endpoint, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(Object.fromEntries(d)) })
+        .then(function (r) { if (!r.ok) throw new Error(); f.innerHTML = "<p><b>Thank you.</b> We have your details and will write back with a quote.</p>"; })
+        .catch(function () { window.location.href = mail; });
+      return;
+    }
+    if (!f.getAttribute("action") && !document.querySelector("input[name=form-name]")) { e.preventDefault(); window.location.href = mail; note.textContent = "Your mail client has opened with the details filled in; press send."; }
+  });
+})();
+</script>
+</body>
+</html>
