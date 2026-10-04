@@ -5,64 +5,72 @@ domain's DNS on Route 53. Nothing goes down on the way: the Route 53 zone first 
 (the GitHub Pages records and the iCloud+ mail records), the nameservers are switched, and only then are the site
 records pointed at CloudFront.
 
-Written and linted (cfn-lint clean) on 4 Oct 2026; NOT yet run — no AWS account, CLI or credentials on this PC.
+## The account, as found on 4 Oct 2026
+
+AWS account `949836655208` is a "project" of the new AWS experience, a member of the organisation `o-3po4htghbo`
+whose management account is the owner's own sign-up. An organisation policy (SCP) admits ONE region for regional
+services — the project's, `ap-southeast-2` (Sydney) — and the global ones: Route 53, CloudFront, ACM in `us-east-1`,
+S3's global endpoint. CloudFormation is refused everywhere but Sydney. So:
+
+- both stacks are deployed in `ap-southeast-2` (Route 53 and CloudFront are global; the stack only lives there);
+- the bucket is in Sydney (CloudFront serves from its edges, India included; the origin's place hardly matters);
+- the certificate is requested in `us-east-1` with the CLI (CloudFront takes certificates only from there, and the
+  policy admits ACM there but not CloudFormation) and handed to `site.yaml` as `CertificateArn`.
+
+The CLI is signed in with `aws login` (browser; short-lived credentials renewed by themselves for up to 90 days).
 
 ## What it costs
 
 Route 53 zone US$0.50 a month plus queries; S3 and CloudFront for a site this size stay within cents (CloudFront's
 always-free tier is 1 TB and 10 million requests a month); the certificate is free.
 
-## Steps
+## Steps (from `C:\Users\gupta\projects\clarv-site`)
 
-Every command runs from this folder's parent (`C:\Users\gupta\projects\clarv-site`), region `us-east-1` throughout
-(CloudFront certificates must be issued there; Route 53 is global).
-
-1. **AWS account and CLI** — the same account as the Clarv application. MFA on the root sign-in, and an IAM user
-   (`clarv-admin`, console access, AdministratorAccess, its own MFA) for everyday work. The CLI is installed
-   (`winget install Amazon.AWSCLI`, 2.37.9 on 4 Oct 2026). Sign it in with `aws login`: the browser opens AWS's
-   sign-in, you sign in as `clarv-admin`, and the CLI keeps only short-lived credentials it refreshes itself — no
-   access keys to create or store. `aws sts get-caller-identity` then names the user.
-
-2. **The zone** (a copy of today's DNS, still pointing at GitHub Pages):
+1. **Zone** — DONE 4 Oct 2026: stack `clarv-zone` in ap-southeast-2, hosted zone `Z0515255HQA5KHH31O3D`, read back
+   from an AWS nameserver identical to the live Squarespace zone (A, AAAA, MX, SPF and apple-domain TXT, www, DKIM).
 
    ```
-   aws cloudformation deploy --region us-east-1 --stack-name clarv-zone --template-file aws/zone.yaml
-   aws cloudformation describe-stacks --region us-east-1 --stack-name clarv-zone --query "Stacks[0].Outputs"
+   aws cloudformation deploy --region ap-southeast-2 --stack-name clarv-zone --template-file aws/zone.yaml
    ```
 
-   Before switching, compare the zone with the live one: `Resolve-DnsName clarv.in -Type MX -Server <one of the
-   four NameServers>` should answer the two iCloud servers, and `-Type TXT` the SPF and `apple-domain` lines. If
-   iCloud's Custom Email Domain page shows a DKIM value other than `sig1.dkim.clarv.in.at.icloudmailadmin.com`, change
-   the `Dkim` record first.
+2. **Certificate** — DONE 4 Oct 2026, waiting for validation:
+   `arn:aws:acm:us-east-1:949836655208:certificate/d722136c-9ccd-44d4-8a5d-4e3b426b7dc6`; its two validation
+   CNAMEs are in the zone (parameters `CertValidation1Name/Value`, `CertValidation2Name/Value` on `clarv-zone`). ACM
+   checks public DNS, so it is issued once the nameservers point at Route 53.
 
-3. **Nameservers** — at Squarespace: Domains › clarv.in › DNS › Nameservers › use custom nameservers, enter the four
-   from the `NameServers` output. Propagation takes minutes to a day; the site and mail keep working throughout,
-   because both zones say the same thing.
+3. **Nameservers** (the owner's step) — at Squarespace: Domains › clarv.in › DNS › Nameservers › use custom
+   nameservers: `ns-141.awsdns-17.com`, `ns-926.awsdns-51.net`, `ns-1662.awsdns-15.co.uk`, `ns-1150.awsdns-15.org`.
+   Before switching, check Squarespace's DNS list holds nothing beyond the records in step 1. The site and mail keep
+   working through propagation, because both zones say the same thing.
 
-4. **The site stack** (once `Resolve-DnsName clarv.in -Type NS` answers the awsdns servers):
-
-   ```
-   aws cloudformation deploy --region us-east-1 --stack-name clarv-site --template-file aws/site.yaml --parameter-overrides HostedZoneId=<HostedZoneId>
-   ```
-
-   It waits while ACM validates the certificate through the zone (a few minutes) and CloudFront deploys (up to 15).
-
-5. **Upload**: `powershell -ExecutionPolicy Bypass -File aws\deploy.ps1`. Check it before the switch on the
-   distribution's own address: `https://<DistributionDomain>/` (the browser warns about the name; the page itself
-   should load).
-
-6. **Switch the site to CloudFront**:
+4. **Site stack**, once the certificate reads ISSUED
+   (`aws acm describe-certificate --region us-east-1 --certificate-arn <arn> --query Certificate.Status`):
 
    ```
-   aws cloudformation deploy --region us-east-1 --stack-name clarv-zone --template-file aws/zone.yaml --parameter-overrides SiteTarget=cloudfront CloudFrontDomain=<DistributionDomain>
+   aws cloudformation deploy --region ap-southeast-2 --stack-name clarv-site --template-file aws/site.yaml --parameter-overrides CertificateArn=<arn>
    ```
 
-   When the Clarv application's stack is up, add `AppIp=<its PublicIp>` to the same command; that writes
-   `app.clarv.in`, which replaces the registrar step in the application's DEPLOY.md.
+5. **Upload**: `powershell -ExecutionPolicy Bypass -File aws\deploy.ps1`; check it on the distribution's own address
+   `https://<DistributionDomain>/` (the browser warns about the name; the page itself should load).
+
+6. **Switch the site to CloudFront** (keep the certificate parameters on every later update of `clarv-zone`):
+
+   ```
+   aws cloudformation deploy --region ap-southeast-2 --stack-name clarv-zone --template-file aws/zone.yaml --parameter-overrides SiteTarget=cloudfront CloudFrontDomain=<DistributionDomain> CertValidation1Name=... CertValidation1Value=... CertValidation2Name=... CertValidation2Value=...
+   ```
+
+   When the Clarv application's stack is up, add `AppIp=<its PublicIp>`; that writes `app.clarv.in`.
 
 7. **Retire GitHub Pages** once `https://clarv.in` answers from CloudFront (`Invoke-WebRequest https://clarv.in -Method
-   Head` shows `Via: … cloudfront`): the repository's Settings › Pages › Unpublish. Keep the repo — it stays the
-   source; every later change is `git commit` then `aws\deploy.ps1`.
+   Head` shows `Via: … cloudfront`): the repository's Settings › Pages › Unpublish. The repo stays the source; every
+   later change is `git commit` then `aws\deploy.ps1`.
+
+## The application (app.clarv.in)
+
+The owner's rule (4 Oct 2026): when a customer signs in at clarv.in, everything runs on AWS, nothing on the
+development PC. The application's kit is `vanij/deploy/` (docs/DEPLOY.md); it is region-agnostic (`--region`). It was
+written for Mumbai, as the SP-API registration says; this project admits Sydney only. Mumbai needs the owner's
+management account: a project in Asia Pacific (Mumbai), or Mumbai admitted on this project's region policy.
 
 ## What it sets
 
