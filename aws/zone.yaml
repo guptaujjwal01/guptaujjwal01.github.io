@@ -1,0 +1,145 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  clarv.in DNS on Route 53. Carries the iCloud+ mail records exactly as they stand at Squarespace, so mail keeps
+  working through the nameserver change. The site records point at GitHub Pages until the CloudFront stack exists
+  (SiteTarget=github), then at CloudFront (SiteTarget=cloudfront). Deploy in us-east-1.
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: clarv.in
+  SiteTarget:
+    Type: String
+    AllowedValues: [github, cloudfront]
+    Default: github
+    Description: github while the site is still on GitHub Pages; cloudfront once site.yaml is deployed.
+  CloudFrontDomain:
+    Type: String
+    Default: ""
+    Description: The DistributionDomain output of site.yaml (e.g. d1234abcd.cloudfront.net). Needed for SiteTarget=cloudfront.
+  AppIp:
+    Type: String
+    Default: ""
+    Description: The Clarv application's Elastic IP (the clarv stack's PublicIp). Empty leaves app.clarv.in out.
+  AppleDomainCode:
+    Type: String
+    Default: apple-domain=NxhVtq4lfs5ZeyXJ
+    Description: iCloud+ custom-domain verification TXT, as read from the live zone on 4 Oct 2026.
+
+Conditions:
+  OnGithub: !Equals [!Ref SiteTarget, github]
+  OnCloudFront: !Equals [!Ref SiteTarget, cloudfront]
+  HasApp: !Not [!Equals [!Ref AppIp, ""]]
+
+Resources:
+  Zone:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      Name: !Ref DomainName
+      HostedZoneConfig:
+        Comment: clarv.in public zone (site, app and iCloud mail)
+
+  Mail:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref Zone
+      Name: !Ref DomainName
+      Type: MX
+      TTL: "3600"
+      ResourceRecords:
+        - 10 mx01.mail.icloud.com.
+        - 10 mx02.mail.icloud.com.
+
+  Txt:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref Zone
+      Name: !Ref DomainName
+      Type: TXT
+      TTL: "3600"
+      ResourceRecords:
+        - '"v=spf1 include:icloud.com ~all"'
+        - !Sub '"${AppleDomainCode}"'
+
+  Dkim:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref Zone
+      Name: !Sub sig1._domainkey.${DomainName}
+      Type: CNAME
+      TTL: "3600"
+      ResourceRecords:
+        - !Sub sig1.dkim.${DomainName}.at.icloudmailadmin.com.
+
+  ApexGithub:
+    Type: AWS::Route53::RecordSet
+    Condition: OnGithub
+    Properties:
+      HostedZoneId: !Ref Zone
+      Name: !Ref DomainName
+      Type: A
+      TTL: "300"
+      ResourceRecords: [185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153]
+
+  WwwGithub:
+    Type: AWS::Route53::RecordSet
+    Condition: OnGithub
+    Properties:
+      HostedZoneId: !Ref Zone
+      Name: !Sub www.${DomainName}
+      Type: CNAME
+      TTL: "300"
+      ResourceRecords: [guptaujjwal01.github.io]
+
+  ApexCdn:
+    Type: AWS::Route53::RecordSet
+    Condition: OnCloudFront
+    Properties:
+      HostedZoneId: !Ref Zone
+      Name: !Ref DomainName
+      Type: A
+      AliasTarget: { DNSName: !Ref CloudFrontDomain, HostedZoneId: Z2FDTNDATAQYW2 }
+
+  ApexCdn6:
+    Type: AWS::Route53::RecordSet
+    Condition: OnCloudFront
+    Properties:
+      HostedZoneId: !Ref Zone
+      Name: !Ref DomainName
+      Type: AAAA
+      AliasTarget: { DNSName: !Ref CloudFrontDomain, HostedZoneId: Z2FDTNDATAQYW2 }
+
+  WwwCdn:
+    Type: AWS::Route53::RecordSet
+    Condition: OnCloudFront
+    Properties:
+      HostedZoneId: !Ref Zone
+      Name: !Sub www.${DomainName}
+      Type: A
+      AliasTarget: { DNSName: !Ref CloudFrontDomain, HostedZoneId: Z2FDTNDATAQYW2 }
+
+  WwwCdn6:
+    Type: AWS::Route53::RecordSet
+    Condition: OnCloudFront
+    Properties:
+      HostedZoneId: !Ref Zone
+      Name: !Sub www.${DomainName}
+      Type: AAAA
+      AliasTarget: { DNSName: !Ref CloudFrontDomain, HostedZoneId: Z2FDTNDATAQYW2 }
+
+  App:
+    Type: AWS::Route53::RecordSet
+    Condition: HasApp
+    Properties:
+      HostedZoneId: !Ref Zone
+      Name: !Sub app.${DomainName}
+      Type: A
+      TTL: "300"
+      ResourceRecords: [!Ref AppIp]
+
+Outputs:
+  HostedZoneId:
+    Value: !Ref Zone
+  NameServers:
+    Description: Put these four at Squarespace (Domains > clarv.in > DNS > Nameservers > use custom nameservers).
+    Value: !Join [", ", !GetAtt Zone.NameServers]
