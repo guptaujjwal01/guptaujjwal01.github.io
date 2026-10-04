@@ -33,15 +33,21 @@ always-free tier is 1 TB and 10 million requests a month); the certificate is fr
    aws cloudformation deploy --region ap-southeast-2 --stack-name clarv-zone --template-file aws/zone.yaml
    ```
 
-2. **Certificate** — DONE 4 Oct 2026, waiting for validation:
-   `arn:aws:acm:us-east-1:949836655208:certificate/d722136c-9ccd-44d4-8a5d-4e3b426b7dc6`; its two validation
-   CNAMEs are in the zone (parameters `CertValidation1Name/Value`, `CertValidation2Name/Value` on `clarv-zone`). ACM
-   checks public DNS, so it is issued once the nameservers point at Route 53.
+2. **Certificate** — ISSUED 4 Oct 2026, 18:26:
+   `arn:aws:acm:us-east-1:949836655208:certificate/e3f09165-baba-40bb-bb56-8d7d8037f71d`; its two validation
+   CNAMEs are in the zone (parameters `CertValidation1Name/Value`, `CertValidation2Name/Value` on `clarv-zone`;
+   ACM reuses the same validation records for the same name in the same account). **The first request failed with
+   CAA_ERROR on www.clarv.in**: www was a CNAME to `guptaujjwal01.github.io`, and a CNAME carries its target's CAA
+   records — github.io admits only Let's Encrypt, Sectigo and DigiCert. www now points at GitHub Pages by its
+   addresses (A/AAAA), which lifts that; a CNAME cannot be swapped for other records in place, so the change was two
+   updates (`WwwStage=none`, then `WwwStage=records`).
 
-3. **Nameservers** (the owner's step) — at Squarespace: Domains › clarv.in › DNS › Nameservers › use custom
-   nameservers: `ns-141.awsdns-17.com`, `ns-926.awsdns-51.net`, `ns-1662.awsdns-15.co.uk`, `ns-1150.awsdns-15.org`.
-   Before switching, check Squarespace's DNS list holds nothing beyond the records in step 1. The site and mail keep
-   working through propagation, because both zones say the same thing.
+3. **Nameservers** — DONE 4 Oct 2026: Squarespace saved them at 18:07, the .in registry delegated to Route 53 at
+   18:13. **DNSSEC first**: Squarespace had it on (a DS record at the registry). Its switch removes the signing keys
+   at once and the registry's DS minutes later, so the domain failed validation (SERVFAIL at Google, Cloudflare,
+   Quad9) from 17:56 to 18:03. Any future move off a signed zone: remove the DS at the registry, wait its TTL, and
+   only then stop signing — or accept the gap. Squarespace's nameserver change also asks for an emailed code (the
+   owner's). Squarespace's "Domain Connect" preset (`_domainconnect`) was not copied: it works only on its DNS.
 
 4. **Site stack**, once the certificate reads ISSUED
    (`aws acm describe-certificate --region us-east-1 --certificate-arn <arn> --query Certificate.Status`):

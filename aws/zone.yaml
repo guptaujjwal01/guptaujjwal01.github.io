@@ -40,9 +40,15 @@ Parameters:
   CertValidation2Value:
     Type: String
     Default: ""
+  WwwStage:
+    Type: String
+    AllowedValues: [records, none]
+    Default: records
+    Description: none only for the one update that removes the old www CNAME before its replacement is written.
 
 Conditions:
   OnGithub: !Equals [!Ref SiteTarget, github]
+  WwwOnGithub: !And [!Condition OnGithub, !Equals [!Ref WwwStage, records]]
   OnCloudFront: !Equals [!Ref SiteTarget, cloudfront]
   HasApp: !Not [!Equals [!Ref AppIp, ""]]
   HasCert1: !Not [!Equals [!Ref CertValidation1Name, ""]]
@@ -108,15 +114,28 @@ Resources:
       TTL: "300"
       ResourceRecords: ["2606:50c0:8000::153"]
 
-  WwwGithub:
+  # www points at GitHub Pages by its addresses, not by a CNAME to guptaujjwal01.github.io: a CNAME carries
+  # github.io's CAA records (Let's Encrypt, Sectigo, DigiCert only) and ACM refused www.clarv.in with CAA_ERROR
+  # on 4 Oct 2026. WwwStage=none removes it for one update, because a CNAME cannot be swapped in place.
+  WwwGithubA:
     Type: AWS::Route53::RecordSet
-    Condition: OnGithub
+    Condition: WwwOnGithub
     Properties:
       HostedZoneId: !Ref Zone
       Name: !Sub www.${DomainName}
-      Type: CNAME
+      Type: A
       TTL: "300"
-      ResourceRecords: [guptaujjwal01.github.io]
+      ResourceRecords: [185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153]
+
+  WwwGithubAAAA:
+    Type: AWS::Route53::RecordSet
+    Condition: WwwOnGithub
+    Properties:
+      HostedZoneId: !Ref Zone
+      Name: !Sub www.${DomainName}
+      Type: AAAA
+      TTL: "300"
+      ResourceRecords: ["2606:50c0:8000::153"]
 
   ApexCdn:
     Type: AWS::Route53::RecordSet
