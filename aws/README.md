@@ -17,8 +17,11 @@ always-free tier is 1 TB and 10 million requests a month); the certificate is fr
 Every command runs from this folder's parent (`C:\Users\gupta\projects\clarv-site`), region `us-east-1` throughout
 (CloudFront certificates must be issued there; Route 53 is global).
 
-1. **AWS account and CLI** — the same account as the Clarv application. Install the CLI
-   (`winget install Amazon.AWSCLI`) and sign in yourself (`aws configure` with an IAM user's keys, or `aws sso login`).
+1. **AWS account and CLI** — the same account as the Clarv application. MFA on the root sign-in, and an IAM user
+   (`clarv-admin`, console access, AdministratorAccess, its own MFA) for everyday work. The CLI is installed
+   (`winget install Amazon.AWSCLI`, 2.37.9 on 4 Oct 2026). Sign it in with `aws login`: the browser opens AWS's
+   sign-in, you sign in as `clarv-admin`, and the CLI keeps only short-lived credentials it refreshes itself — no
+   access keys to create or store. `aws sts get-caller-identity` then names the user.
 
 2. **The zone** (a copy of today's DNS, still pointing at GitHub Pages):
 
