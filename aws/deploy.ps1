@@ -20,6 +20,10 @@ if ($LASTEXITCODE) { throw "upload of the pages failed" }
 aws s3 sync $root "s3://$bucket" --region $region --delete --exclude "*" --include "*.css" --include "*.svg" `
   --cache-control "public, max-age=86400"
 if ($LASTEXITCODE) { throw "upload of the assets failed" }
+# RFC 9116: where to report a security problem (the app serves its own copy).
+aws s3 sync "$root\.well-known" "s3://$bucket/.well-known" --region $region --delete `
+  --content-type "text/plain; charset=utf-8" --cache-control "public, max-age=86400"
+if ($LASTEXITCODE) { throw "upload of .well-known failed" }
 
 aws cloudfront create-invalidation --distribution-id $dist --paths "/*" --query "Invalidation.Id" --output text
 if ($LASTEXITCODE) { throw "the cache clear failed" }
