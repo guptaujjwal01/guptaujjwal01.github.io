@@ -66,12 +66,12 @@ p { margin: 0; }
 
 /* hero */
 /* padding-block: a padding shorthand would zero the page's side gutter on .wrap */
-.hero { padding-block: 84px 56px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
+.hero { padding-block: 84px 56px; display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); /* the example panel needs ~530px for its tiles and table */ gap: 48px; align-items: center; }
 .hero .cta { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
 /* the three figures: each on one line; the row wraps whole rather than breaking a figure ("GSTR-1 / ready") */
-.hero .facts { display: flex; flex-wrap: wrap; gap: 18px 28px; margin-top: 32px; }
-.fact b { display: block; font-family: var(--display); font-size: 24px; font-weight: 500; line-height: 1.2; white-space: nowrap; }
-.fact span { display: block; max-width: 20ch; color: var(--ink-3); font-size: 13px; }
+.hero .facts { display: flex; flex-wrap: wrap; gap: 18px 24px; margin-top: 32px; }
+.fact b { display: block; font-family: var(--display); font-size: 22px; font-weight: 500; line-height: 1.2; white-space: nowrap; }
+.fact span { display: block; max-width: 16ch; color: var(--ink-3); font-size: 13px; }
 
 /* drawn product panels — demo figures, no client data */
 .panel { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; box-shadow: var(--shadow-2); overflow: hidden; }
@@ -87,6 +87,7 @@ p { margin: 0; }
 table.t { width: 100%; border-collapse: collapse; font-size: 13px; }
 table.t th { text-align: left; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); padding: 6px 8px; border-bottom: 1px solid var(--rule); font-weight: 700; }
 table.t td { padding: 8px; border-bottom: 1px solid var(--rule); }
+table.t td:first-child { white-space: nowrap; }
 table.t td.num, table.t th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .st { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); }
 .st::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
@@ -139,6 +140,10 @@ footer .wrap { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; }
 footer a { color: var(--ink-2); }
 footer .sp { margin-left: auto; }
 
+/* text above the panel before the two squeeze each other */
+@media (max-width: 1080px) {
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+}
 @media (max-width: 900px) {
   .top .wrap { height: 64px; gap: 8px; }
   .nav-l, .nav-r { display: none; }
