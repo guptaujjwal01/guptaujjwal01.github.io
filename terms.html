@@ -10,13 +10,16 @@
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="brand" href="/"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="9.5" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="14" cy="14" r="3.2" fill="currentColor"/><path d="M21 7l4-4" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>Clarv</a>
-  <nav class="nav"><a class="hide-m" href="index.html#features">Features</a><a href="pricing.html">Pricing</a><a class="hide-m" href="privacy.html">Privacy</a><a href="contact.html">Contact</a><a href="login.html">Sign in</a><a class="btn primary" href="contact.html">Request access</a></nav>
+  <nav class="nav nav-l" aria-label="Site"><a href="/#features">Features</a><a href="pricing.html">Pricing</a><a href="privacy.html">Privacy</a></nav>
+  <a class="brand" href="/" aria-label="Clarv — home"><svg viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="#0b6e5e"/><path d="M7 9h14M7 15h14M7 20h14" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M7 18h14" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity=".55"/></svg><span>Clarv</span></a>
+  <nav class="nav nav-r" aria-label="Account"><a href="contact.html">Contact</a><a href="login.html">Sign in</a><a class="btn primary" href="contact.html">Request access</a></nav>
+  <details class="mnav"><summary aria-label="Menu"><span class="burger"></span></summary><nav class="mnav-panel" aria-label="Menu"><a href="/#features">Features</a><a href="pricing.html">Pricing</a><a href="privacy.html">Privacy</a><a href="contact.html">Contact</a><a href="login.html">Sign in</a><a class="btn primary" href="contact.html">Request access</a></nav></details>
+  <a class="m-signin" href="login.html">Sign in</a>
 </div></header>
 <main><section><div class="wrap prose">
   <h1>Terms of service</h1>
-  <p class="meta">Effective 25 September 2026</p>
-  <h2>1. The service</h2><p>Clarv is a web application that reads a seller's marketplace and bank data, with the seller's authorisation, and produces reconciliations, accounting entries, tax workings and operational screens. It is a tool for the seller and its accountant; the seller remains responsible for the returns it files and the entries it posts.</p>
+  <p class="meta">Effective 25 September 2026, updated 4 October 2026</p>
+  <h2>1. The service</h2><p>Clarv is a web application that reads a seller's Amazon and bank data (and other marketplaces' data as Clarv adds them), with the seller's authorisation, and produces reconciliations, accounting entries, tax workings and operational screens. It is a tool for the seller and its accountant; the seller remains responsible for the returns it files and the entries it posts.</p>
   <h2>2. Accounts</h2><p>The seller names its users and their roles and is responsible for what they do. Credentials are personal; sharing them is a breach. We may suspend an account that threatens the service or other sellers.</p>
   <h2>3. Marketplace authorisations</h2><p>The seller authorises Clarv to read its Amazon data through the Selling Partner API and may revoke that authorisation at any time in Seller Central. Clarv writes to a marketplace only on a user's explicit approval in the application.</p>
   <h2>4. Fees</h2><p>As published on the <a href="pricing.html">pricing page</a> or agreed in writing, billed monthly in advance, exclusive of GST. Either party may end a monthly plan at the end of the month; annual plans are refunded pro rata for whole months not used.</p>
@@ -26,5 +29,6 @@
   <h2>8. Contact</h2><p><a href="mailto:hello@clarv.in">hello@clarv.in</a>, or the address on the <a href="contact.html">contact page</a>.</p>
 </div></section></main>
 <footer><div class="wrap"><span>© 2026 Clarv · a product of Ujjwal Gupta &amp; Associates, Chartered Accountants</span><a href="pricing.html">Pricing</a><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms</a><a href="contact.html">Contact</a></div></footer>
+<script>document.querySelectorAll(".mnav-panel a").forEach(function (a) { a.addEventListener("click", function () { a.closest("details").removeAttribute("open"); }); });</script>
 </body>
 </html>

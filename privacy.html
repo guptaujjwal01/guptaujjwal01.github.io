@@ -10,18 +10,21 @@
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="brand" href="/"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="9.5" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="14" cy="14" r="3.2" fill="currentColor"/><path d="M21 7l4-4" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>Clarv</a>
-  <nav class="nav"><a class="hide-m" href="index.html#features">Features</a><a href="pricing.html">Pricing</a><a class="on hide-m" href="privacy.html">Privacy</a><a href="contact.html">Contact</a><a href="login.html">Sign in</a><a class="btn primary" href="contact.html">Request access</a></nav>
+  <nav class="nav nav-l" aria-label="Site"><a href="/#features">Features</a><a href="pricing.html">Pricing</a><a class="on" href="privacy.html">Privacy</a></nav>
+  <a class="brand" href="/" aria-label="Clarv — home"><svg viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="8" fill="#0b6e5e"/><path d="M7 9h14M7 15h14M7 20h14" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M7 18h14" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity=".55"/></svg><span>Clarv</span></a>
+  <nav class="nav nav-r" aria-label="Account"><a href="contact.html">Contact</a><a href="login.html">Sign in</a><a class="btn primary" href="contact.html">Request access</a></nav>
+  <details class="mnav"><summary aria-label="Menu"><span class="burger"></span></summary><nav class="mnav-panel" aria-label="Menu"><a href="/#features">Features</a><a href="pricing.html">Pricing</a><a class="on" href="privacy.html">Privacy</a><a href="contact.html">Contact</a><a href="login.html">Sign in</a><a class="btn primary" href="contact.html">Request access</a></nav></details>
+  <a class="m-signin" href="login.html">Sign in</a>
 </div></header>
 <main><section><div class="wrap prose">
   <h1>Privacy policy</h1>
-  <p class="meta">Effective 25 September 2026 · Clarv is operated by Ujjwal Gupta &amp; Associates, Chartered Accountants, India ("we", "us").</p>
+  <p class="meta">Effective 25 September 2026, updated 4 October 2026 · Clarv is operated by Ujjwal Gupta &amp; Associates, Chartered Accountants, India ("we", "us").</p>
   <p>Clarv is software that sellers and their accountants use to reconcile and account for their marketplace business. This policy says what data Clarv holds, why, where, for how long, and what rights you have. It is written to be read, not skimmed.</p>
 
   <h2>1. Whose data, and what</h2>
   <ul>
     <li><b>Account data</b>: the name, e-mail address and hashed password of each person who signs in, and the seller's business name, GST registrations and PAN as entered.</li>
-    <li><b>Marketplace data</b>: the reports and API data of the seller's own marketplace accounts (Amazon and any other channel the seller connects) — settlements, orders, inventory, fees, advertising, tax reports and Amazon's tax invoices — read with the seller's authorisation.</li>
+    <li><b>Marketplace data</b>: the reports and API data of the seller's own marketplace accounts (Amazon today; other marketplaces as Clarv adds them and the seller connects them) — settlements, orders, inventory, fees, advertising, tax reports and Amazon's tax invoices — read with the seller's authorisation.</li>
     <li><b>Buyer data (personal data of the seller's customers)</b>: only the minimum the seller's operations need: a buyer's name, address and phone from self-shipped orders, used to print the shipping label and the tax invoice; and a business buyer's GSTIN and name on B2B invoices, used to file the seller's own GST returns. Clarv never holds buyers' payment details.</li>
     <li><b>Bank data</b>: the seller's own bank statements, dropped by the seller for reconciliation.</li>
     <li><b>Usage data</b>: an audit log of what each user did in Clarv, and technical logs (time, request, outcome) that never contain personal data values or credentials.</li>
@@ -31,7 +34,7 @@
   <p>To provide the service the seller has asked for: reconciliation, accounting, tax returns and compliance, stock and warehouse operations. We do not use any data for advertising, profiling, resale or to train models. Amazon data is used only for the seller's own operations and compliance, and is never combined across sellers.</p>
 
   <h2>3. Where it is kept</h2>
-  <p>On Amazon Web Services in the Mumbai region (ap-south-1): an encrypted database, encrypted file storage and application servers in a private network. Data is encrypted in transit (TLS 1.2 or higher) and at rest (AES-256). Credentials and tokens are additionally sealed under a key held apart from the database. No customer data is kept on staff computers.</p>
+  <p>On Amazon Web Services, at present in the Asia Pacific (Sydney) region (ap-southeast-2); we intend to move to the Mumbai region (ap-south-1) and will update this policy when we do. There: an encrypted database, encrypted file storage and application servers in a private network. Data is encrypted in transit (TLS 1.2 or higher) and at rest (AES-256). Credentials and tokens are additionally sealed under a key held apart from the database. No customer data is kept on staff computers.</p>
 
   <h2>4. Who can see it</h2>
   <p>The seller's own users, and the accountants the seller has assigned to its account, each with a role that limits what they can do. Our engineers may access production data only to fix a fault, under named accounts with multi-factor authentication, and every such access is logged. We do not share data with any third party except our hosting provider (Amazon Web Services) as a processor, and any recipient the seller itself instructs, such as the seller's accounting software or the GST portal.</p>
@@ -60,5 +63,6 @@
   <p>We will post any change here with a new effective date, and tell account holders by e-mail of any material change. Questions: <a href="mailto:privacy@clarv.in">privacy@clarv.in</a>, or the address on the <a href="contact.html">contact page</a>.</p>
 </div></section></main>
 <footer><div class="wrap"><span>© 2026 Clarv · a product of Ujjwal Gupta &amp; Associates, Chartered Accountants</span><a href="pricing.html">Pricing</a><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms</a><a href="contact.html">Contact</a></div></footer>
+<script>document.querySelectorAll(".mnav-panel a").forEach(function (a) { a.addEventListener("click", function () { a.closest("details").removeAttribute("open"); }); });</script>
 </body>
 </html>
