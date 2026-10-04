@@ -1,9 +1,10 @@
-/* clarv.in — the public site, in the "C, full stop" identity (4 Oct 2026): ink navy and ledger gold; Fraunces for headings,
-   Manrope for text, Hanken Grotesk for the wordmark alone. */
+/* clarv.in — the public site (4 Oct 2026): ink navy and ledger gold. The logo is two equal squares, ink and gold, corner to
+   corner, beside "clarv" in Hanken Grotesk 800, on an ink header. Fraunces for headings, Manrope for text. */
 :root {
   --ground: #f5f6f8; --surface: #fff; --surface-2: #f9fafb; --ink: #0f172a; --ink-2: #4b5563; --ink-3: #5f6a86;
   --rule: #e6e8ee; --rule-3: #d9dde5; --brand: #0b1b2b; --brand-ink: #20344e; --brand-soft: #eceef2; --brand-tint: #f6f2e8;
   --gold: #b8892e; --gold-soft: #f4ebd7; --gold-text: #8a6416; --link: #22508f; --good-soft: #e3f3ef;
+  --on-ink: #f7f4ec; --on-ink-2: #c9ced8; --gold-on-ink: #d3a64b; --link-on-ink: #e2bc66;
   --good: #0b7a62; --warn: #a15c07; --warn-soft: #fbf1dc; --bad: #b42318; --bad-soft: #fce8e6;
   --sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; --display: "Fraunces", Georgia, serif; --mark: "Hanken Grotesk", "Manrope", ui-sans-serif, system-ui, sans-serif;
   --shadow: 0 1px 2px rgba(16,24,40,.04), 0 1px 3px rgba(16,24,40,.06); --shadow-2: 0 12px 32px rgba(16,24,40,.12), 0 0 0 1px rgba(16,24,40,.05);
@@ -24,24 +25,28 @@ p { margin: 0; }
 .muted { color: var(--ink-3); }
 .small { font-size: 14px; }
 
-/* header: the wordmark at the centre, the links either side of it; on a phone, a menu button, the wordmark, Sign in */
-.top { position: sticky; top: 0; z-index: 5; background: rgba(245,246,248,.92); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-bottom: 1px solid var(--rule); }
+/* header: an ink band, the logo at the centre and the links either side of it; on a phone, a menu button, the logo, Sign in */
+.top { position: sticky; top: 0; z-index: 5; background: var(--brand); border-bottom: 1px solid var(--brand); }
 .top .wrap { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 24px; height: 84px; }
-.brand { grid-column: 2; grid-row: 1; justify-self: center; display: inline-flex; align-items: center; gap: 12px; color: var(--ink); font-family: var(--mark); font-size: 36px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+.brand { grid-column: 2; grid-row: 1; justify-self: center; display: inline-flex; align-items: center; gap: .28em; color: var(--on-ink); font-family: var(--mark); font-size: 34px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
 .brand:hover { text-decoration: none; }
-.brand svg { width: 42px; height: 42px; flex: none; }
-/* The full stop: a gold square the size of the strokes, after the name and at the end of a headline. */
+/* The squares are about the height of an "a" and sit a third of the name's size from it: symbol and name carry one weight.
+   The first square takes the text colour (paper on the ink band); the second is gold. */
+.brand svg { width: .95em; height: .95em; flex: none; }
+.brand .g { fill: var(--gold-on-ink); }
+/* The full stop: a gold square the size of the strokes, at the end of the headline. */
 .stop { display: inline-block; width: .15em; height: .15em; margin-left: .055em; background: var(--gold); }
 .nav { display: flex; gap: 24px; align-items: center; }
 .nav-l { grid-column: 1; grid-row: 1; justify-self: start; }
 .nav-r { grid-column: 3; grid-row: 1; justify-self: end; }
-.nav a { color: var(--ink-2); font-weight: 600; font-size: 15px; }
-.nav a.on { color: var(--ink); }
+.nav a { color: var(--on-ink-2); font-weight: 600; font-size: 15px; }
+.nav a.on { color: var(--on-ink); }
+.nav-r .btn.primary { background: var(--gold-on-ink); border-color: var(--gold-on-ink); color: var(--brand); }
 .mnav, .m-signin { display: none; }
 .mnav summary { list-style: none; cursor: pointer; width: 44px; height: 44px; display: grid; place-items: center; margin-left: -10px; border-radius: 10px; }
 .mnav summary::-webkit-details-marker { display: none; }
-.mnav summary:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
-.burger, .burger::before, .burger::after { display: block; width: 22px; height: 2px; border-radius: 2px; background: var(--ink); transition: transform .2s, background .2s; }
+.mnav summary:focus-visible { outline: 2px solid var(--on-ink); outline-offset: 2px; }
+.burger, .burger::before, .burger::after { display: block; width: 22px; height: 2px; border-radius: 2px; background: var(--on-ink); transition: transform .2s, background .2s; }
 .burger { position: relative; }
 .burger::before, .burger::after { content: ""; position: absolute; left: 0; }
 .burger::before { top: -7px; } .burger::after { top: 7px; }
@@ -143,8 +148,8 @@ footer { padding: 36px 0 48px; color: var(--ink-3); font-size: 14px; border-top:
 footer .wrap { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; }
 footer a { color: var(--ink-2); }
 /* The footer signs off with the logo, once, small. */
-footer .foot-brand { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); font: 700 18px/1 var(--mark); letter-spacing: -0.03em; }
-footer .foot-brand svg { width: 21px; height: 21px; flex: none; }
+footer .foot-brand { display: inline-flex; align-items: center; gap: .28em; color: var(--brand); font: 800 18px/1 var(--mark); letter-spacing: -0.03em; }
+footer .foot-brand svg { width: .95em; height: .95em; flex: none; }
 footer .foot-brand:hover { text-decoration: none; }
 footer .sp { margin-left: auto; }
 
@@ -155,10 +160,9 @@ footer .sp { margin-left: auto; }
 @media (max-width: 900px) {
   .top .wrap { height: 64px; gap: 8px; }
   .nav-l, .nav-r { display: none; }
-  .brand { font-size: 28px; gap: 10px; }
-  .brand svg { width: 33px; height: 33px; }
+  .brand { font-size: 28px; }
   .mnav { display: block; grid-column: 1; grid-row: 1; justify-self: start; }
-  .m-signin { display: inline-flex; grid-column: 3; grid-row: 1; justify-self: end; align-items: center; min-height: 44px; font-weight: 700; font-size: 15px; }
+  .m-signin { display: inline-flex; grid-column: 3; grid-row: 1; justify-self: end; align-items: center; min-height: 44px; font-weight: 700; font-size: 15px; color: var(--link-on-ink); }
   .wrap { padding: 0 18px; }
   section { padding: 44px 0; }
   .hero { grid-template-columns: minmax(0, 1fr); gap: 32px; padding-block: 36px 32px; }
@@ -179,7 +183,7 @@ footer .sp { margin-left: auto; }
   table.t .o { display: none; } /* the example tables drop their least telling column on a phone */
 }
 @media (max-width: 480px) {
-  .brand { font-size: 26px; } .brand svg { width: 31px; height: 31px; }
+  .brand { font-size: 26px; }
   h3 { font-size: 19px; }
   .card { padding: 18px; } .plan { padding: 22px; }
   .panel .body { padding: 12px; }
