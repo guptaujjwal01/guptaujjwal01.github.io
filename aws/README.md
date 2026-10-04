@@ -49,6 +49,15 @@ always-free tier is 1 TB and 10 million requests a month); the certificate is fr
    only then stop signing — or accept the gap. Squarespace's nameserver change also asks for an emailed code (the
    owner's). Squarespace's "Domain Connect" preset (`_domainconnect`) was not copied: it works only on its DNS.
 
+**Steps 4–6 DONE 4 Oct 2026**: stack `clarv-site` (bucket `clarv-site-bucket-nsxy9daagnog`, distribution
+`EAWMIJFSWBJIV` = `d42k2mgeq59m5.cloudfront.net`), the site uploaded and tested on the distribution as clarv.in
+(pages 200, a missing page 404, www 301 to the apex with its path, http 301 to https, the ACM certificate verified,
+HSTS / nosniff / frame-options / referrer headers present), and the four site records moved to CloudFront at 18:34
+by an in-place UPSERT previewed first (Modify, Replacement False; mail records untouched). Squarespace's records
+carried a 4-hour TTL, so resolvers that read them before 18:13 reach GitHub Pages until about 22:15 — and GitHub was
+serving its `*.github.io` certificate for clarv.in, not one for the domain, so those visitors see a warning on
+https until their cache expires. Retire GitHub Pages (step 7) only after that, on 5 Oct or later.
+
 4. **Site stack**, once the certificate reads ISSUED
    (`aws acm describe-certificate --region us-east-1 --certificate-arn <arn> --query Certificate.Status`):
 
